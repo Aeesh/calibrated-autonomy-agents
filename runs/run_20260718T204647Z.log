@@ -1,5 +1,5 @@
 ======================================================================
-STAGE 1: LIVE MONITOR
+STAGE 1: CONVERGENCE MONITOR
 ======================================================================
   Loaded 29 iterations from scf.MnCoWO4_AFM.out
   iter   1: CONTINUE  4.24e+00 Ry, best so far 4.24e+00 Ry

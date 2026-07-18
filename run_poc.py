@@ -13,7 +13,7 @@ RUNS_DIR = os.path.join(os.path.dirname(__file__), "runs")
 
 def run_live_monitor(lines):
     lines.append("=" * 70)
-    lines.append("STAGE 1: LIVE MONITOR")
+    lines.append("STAGE 1: CONVERGENCE MONITOR")
     lines.append("=" * 70)
     if not os.path.exists(RAW_SCF_FILE):
         lines.append(f"  {RAW_SCF_FILE} not found.")
