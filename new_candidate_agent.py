@@ -1,4 +1,4 @@
-from calibration_data import X_SITE_KNOWLEDGE, A_SITE_MN_U_EV
+from calibration_data import X_SITE_KNOWLEDGE, A_SITE_MN_U_EV, X_SITE_CATIONS
 from qe_input_writer import new_candidate_scf
 from qe_job_runner import attempt_run
 
@@ -6,9 +6,39 @@ from qe_job_runner import attempt_run
 class NewCandidateAgent:
     """Assesses a material not in the calibration set: no known outcome
     to check against. Decides using X-site cation knowledge extracted
-    from CalibrationAgent's four materials. (which X-site cations needed a Hubbard U
-    correction, which didn't, and why (d-shell filling).))"""
+    from CalibrationAgent's four materials (which X-site cations needed
+    a Hubbard U correction, which didn't, and why (d-shell filling)),
+    and cross-checks the same FailurePlaybook the calibration stage
+    built, for whichever calibration material it ends up analogising
+    to."""
 
+    def __init__(self, playbook=None):
+        self.playbook = playbook
+
+    def _playbook_note(self, analog_cation):
+        """Was a diagnosed failure ever learned from the calibration
+        material that hosts this analog cation? Returns a log line, or
+        None if there's no playbook to check or no analog material to
+        check it against."""
+        if self.playbook is None:
+            return None
+        analog_material = next(
+            (mat for mat, cat in X_SITE_CATIONS.items() if cat == analog_cation), None
+        )
+        if analog_material is None:
+            return None
+        has_prior_failure = any(
+            entry["learned_from"] == analog_material for entry in self.playbook.entries.values()
+        )
+        if has_prior_failure:
+            return (
+                f"Checked the failure playbook: {analog_material} (the analog material) has a "
+                "diagnosed failure on record - treating this analogy with extra caution."
+            )
+        return (
+            f"Checked the failure playbook for {analog_material} (the analog material): "
+            "no diagnosed failure on record."
+        )
 
     def assess(self, material, x_cation, x_d_shell):
         log = []
@@ -38,6 +68,11 @@ class NewCandidateAgent:
             f"{x_cation} (d{x_d_shell}) has no reported U, but shares its d-shell filling with "
             f"{analog_cation} (also d{analog_entry['d_shell']})."
         )
+
+        playbook_note = self._playbook_note(analog_cation)
+        if playbook_note:
+            log.append(playbook_note)
+
         if analog_entry["U_eV"] is None:
             log.append(
                 f"{analog_cation} needed no Hubbard correction (full d-shell, no self-interaction "

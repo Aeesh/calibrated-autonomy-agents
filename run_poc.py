@@ -56,11 +56,11 @@ def run_calibration(lines):
     return playbook
 
 
-def run_new_candidates(lines):
+def run_new_candidates(lines, playbook):
     lines.append("\n" + "=" * 70)
     lines.append("STAGE 3: NEW CANDIDATES")
     lines.append("=" * 70)
-    agent = NewCandidateAgent()
+    agent = NewCandidateAgent(playbook)
     for name, spec in NEW_CANDIDATES.items():
         lines.append(f"\n--- {name}  [{spec['source']}] ---")
         log, status, artifact = agent.run(name, spec["x_cation"], spec["x_d_shell"], OUTPUT_DIR)
@@ -72,8 +72,8 @@ def run_new_candidates(lines):
 def main():
     lines = []
     run_live_monitor(lines)
-    run_calibration(lines)
-    run_new_candidates(lines)
+    playbook = run_calibration(lines)
+    run_new_candidates(lines, playbook)
     lines.append(
         "\nThe agent generates and attempts to run each QE input file it decides on. "
         "This environment has no pw.x and no cluster access, so execution fails here; "
