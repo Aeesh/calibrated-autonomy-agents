@@ -1,0 +1,29 @@
+&CONTROL
+  calculation = 'scf'
+  prefix = 'MnCoWO4_recheck_densekmesh'
+/
+&SYSTEM
+  ibrav = 0
+  nat = 12
+  ntyp = 3
+  ecutwfc = 120.0
+  ecutrho = 480.0
+  nspin = 2
+  occupations = 'smearing'
+  smearing = 'mv'
+  degauss = 0.02
+/
+&ELECTRONS
+  conv_thr = 1e-09
+  mixing_beta = 0.7
+/
+HUBBARD (ortho-atomic)
+U Mn-3d 4.65
+K_POINTS automatic
+  12 12 12 0 0 0
+
+! Denser mesh than the original SCF run ((6, 6, 6)), reusing the
+! NSCF density to check whether the energy ordering survives tighter
+! k-sampling.
+! ATOMIC_SPECIES, ATOMIC_POSITIONS, CELL_PARAMETERS: not in the source
+! report, fill in from the actual relaxed structure first.

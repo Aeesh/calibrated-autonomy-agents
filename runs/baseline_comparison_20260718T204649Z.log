@@ -1,0 +1,21 @@
+=== Agent (playbook + recheck-vs-degenerate) ===
+  MnCoWO4: ESCALATE_VERIFY_WORTHWHILE
+  MnNiWO4: ESCALATE_VERIFY_WORTHWHILE
+  MnZnWO4: ESCALATE_DEGENERATE
+  MnFeWO4: ESCALATE_NEW_DIAGNOSIS
+
+=== Naive baseline (no playbook, no recheck distinction) ===
+  MnCoWO4: ESCALATE_FLAT
+  MnNiWO4: ESCALATE_FLAT
+  MnZnWO4: ESCALATE_FLAT
+  MnFeWO4: ESCALATE_NO_DIAGNOSIS
+
+=== Where they differ ===
+  MnCoWO4: agent=ESCALATE_VERIFY_WORTHWHILE vs baseline=ESCALATE_FLAT
+  MnNiWO4: agent=ESCALATE_VERIFY_WORTHWHILE vs baseline=ESCALATE_FLAT
+  MnZnWO4: agent=ESCALATE_DEGENERATE vs baseline=ESCALATE_FLAT
+  MnFeWO4: agent=ESCALATE_NEW_DIAGNOSIS vs baseline=ESCALATE_NO_DIAGNOSIS
+
+Agent separates 2 recheck-worthwhile case(s) ['MnCoWO4', 'MnNiWO4']
+from 1 genuinely-degenerate case(s) ['MnZnWO4'].
+The naive baseline reports both as the same flat ESCALATE_FLAT, losing that distinction.
