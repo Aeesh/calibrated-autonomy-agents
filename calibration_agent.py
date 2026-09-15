@@ -1,5 +1,6 @@
 from calibration_data import NOISE_FLOOR, NOISE_FLOOR_UNIT, DEGENERATE_CUTOFF, RECHECK_COST_MIN
 from qe_input_writer import known_fix_rerun, recheck_denser_kmesh
+from qe_constants import HUBBARD_U_EV
 
 
 class FailurePlaybook:
@@ -33,22 +34,24 @@ class CalibrationAgent:
         if not a["converged"]:
             match = self.playbook.lookup(a["failure_signals"])
             if match:
+                fix = match["fix"]              # now a dict
                 log.append(f"{a['label']} failed. Matches signature learned from {match['learned_from']}.")
-                fix_text = match["fix"]
                 status = "ESCALATE_WITH_KNOWN_FIX"
             else:
-                fix_text = a.get("known_fix")
-                if fix_text:
-                    self.playbook.learn(a["failure_signals"], fix_text, case_name)
+                fix = a.get("known_fix")
+                if fix:
+                    self.playbook.learn(a["failure_signals"], fix, case_name)
                     log.append(f"{a['label']} failed. New signature, diagnosing from scratch.")
                 else:
                     log.append(f"{a['label']} failed. New signature, no diagnosis available.")
-                    fix_text = None
                 status = "ESCALATE_NEW_DIAGNOSIS"
 
-            if fix_text:
-                log.append(f"Fix: {fix_text}")
-                input_text = known_fix_rerun(case_name, record["cations"])
+            if fix:
+                log.append(f"Fix: {fix['description']}")
+                input_text = known_fix_rerun(
+                    case_name, record["cations"], fix["x_cation"], fix["x_u_ev"],
+                    fix["starting_magnetization"], fix["mixing_beta"], fix["mixing_mode"], fix["electron_maxstep"],
+                )
                 artifacts.append((f"{case_name}_AFM_recheck.in", input_text))
 
             log.append(f"No {a['label']}/{b['label']} comparison possible: {a['label']} never converged.")
@@ -73,8 +76,10 @@ class CalibrationAgent:
                 f"noise floor but not near zero - a denser k-mesh recheck (~{RECHECK_COST_MIN:.0f} min) "
                 "could plausibly resolve it."
             )
+
             x_cation = [c for c in record["cations"] if c not in ("Mn", "W")][0]
-            input_text = recheck_denser_kmesh(case_name, record["cations"], x_cation, None)
+            x_u_ev = HUBBARD_U_EV.get(x_cation)  # None only for cations with no U (e.g. Zn)
+            input_text = recheck_denser_kmesh(case_name, record["cations"], x_cation, x_u_ev)
             artifacts.append((f"{case_name}_recheck_densekmesh.in", input_text))
             return log, "ESCALATE_VERIFY_WORTHWHILE", artifacts
 

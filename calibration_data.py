@@ -17,7 +17,7 @@ NAT_ATOMS = 12
 # X-site information extracted from the calibration materials in the report.
 # These values are only used when no matching raw SCF output is available.
 X_SITE_KNOWLEDGE = {
-    "Fe": {"d_shell": 5, "U_eV": 5.30},
+    "Fe": {"d_shell": 6, "U_eV": 5.30},
     "Co": {"d_shell": 7, "U_eV": 7.84},
     "Ni": {"d_shell": 8, "U_eV": 6.45},
     "Zn": {"d_shell": 10, "U_eV": None},
@@ -36,10 +36,16 @@ MNFEWO4_AFM_FAILURE_SIGNALS = {
     "oscillating_hubbard_energy": True,
     "partially_filled_d_shell": True,
 }
-MNFEWO4_AFM_KNOWN_FIX = (
-    "reduce mixing_beta from 0.7 to 0.3, switch to local-TF mixing, "
-    "set starting_magnetization(Fe) = -0.50"
-)
+
+MNFEWO4_AFM_KNOWN_FIX = {
+    "description": "reduce mixing_beta from 0.7 to 0.3, switch to local-TF mixing, set starting_magnetization(Fe) = -0.50",
+    "x_cation": "Fe",
+    "x_u_ev": 5.30,
+    "starting_magnetization": -0.50,
+    "mixing_beta": 0.3,
+    "mixing_mode": "local-TF",
+    "electron_maxstep": 200,
+}
 
 X_SITE_CATIONS = {"MnCoWO4": "Co", "MnNiWO4": "Ni", "MnZnWO4": "Zn", "MnFeWO4": "Fe"}
 CALIBRATION_ORDER = ["MnCoWO4", "MnNiWO4", "MnZnWO4", "MnFeWO4"]

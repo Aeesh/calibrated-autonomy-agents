@@ -22,8 +22,8 @@ def _placeholder_note():
     )
 
 
-def known_fix_rerun(material, cations, fe_starting_magnetization=-0.50):
-    """Generates the rerun input for the documented MnFeWO4 AFM fix."""
+def known_fix_rerun(material, cations, x_cation, x_u_ev, starting_magnetization,
+                     mixing_beta=0.3, mixing_mode='local-TF', electron_maxstep=200):
     return f"""\
 &CONTROL
   calculation = 'scf'
@@ -39,15 +39,15 @@ def known_fix_rerun(material, cations, fe_starting_magnetization=-0.50):
   occupations = 'smearing'
   smearing = '{p.SMEARING}'
   degauss = {p.DEGAUSS_RY}
-  starting_magnetization(1) = {fe_starting_magnetization}
+  starting_magnetization(1) = {starting_magnetization}
 /
 &ELECTRONS
   conv_thr = {p.SCF_THRESHOLD_RY}
-  mixing_beta = 0.3
-  mixing_mode = 'local-TF'
-  electron_maxstep = 200
+  mixing_beta = {mixing_beta}
+  mixing_mode = '{mixing_mode}'
+  electron_maxstep = {electron_maxstep}
 /
-{_hubbard_block('Fe', 5.30)}
+{_hubbard_block(x_cation, x_u_ev)}
 K_POINTS automatic
   {p.KMESH_SCF[0]} {p.KMESH_SCF[1]} {p.KMESH_SCF[2]} 0 0 0
 

@@ -7,8 +7,8 @@ RUNS_DIR = os.path.join(os.path.dirname(__file__), "runs")
 
 
 def naive_run(record):
-    """No playbook, no recheck-vs-degenerate distinction: converged
-    result is fact, any within-noise gap is a flat escalate."""
+    """No playbook, recheck-vs-degenerate distinction: converged
+    result is fact-checked, any within-noise gap is a flat escalate."""
     a = record["candidate_a"]
     if not a["converged"]:
         return "ESCALATE_NO_DIAGNOSIS"
